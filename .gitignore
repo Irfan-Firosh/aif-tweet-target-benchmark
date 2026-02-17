@@ -1,0 +1,33 @@
+# Secrets
+.env
+
+# Virtual environment
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Pickle files (large binary)
+*.pkl
+
+# Large data directories (812+ wiki pages)
+data/tweet_target_data/wiki_pages_7.0/
+
+# Parse files (intermediate format)
+*.parse
+
+# PDFs (copyrighted papers)
+*.pdf
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code
+.claude/
+
+CLAUDE.md

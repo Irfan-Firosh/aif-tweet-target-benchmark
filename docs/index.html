@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tweet Target Entity &amp; Sentiment — Graph Visualizations</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f23;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            color: #ffffff;
+        }
+        .subtitle {
+            color: #888;
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+        }
+        .subtitle a { color: #7aa2f7; text-decoration: none; }
+        .subtitle a:hover { text-decoration: underline; }
+
+        .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+        .card {
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 1.8rem;
+            transition: border-color 0.2s, transform 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .card:hover { border-color: #7aa2f7; transform: translateY(-2px); }
+        .card h2 { font-size: 1.15rem; color: #fff; margin-bottom: 0.5rem; }
+        .card p { font-size: 0.88rem; color: #999; line-height: 1.5; }
+        .card .badge {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-green { background: #1b3a2a; color: #4CAF50; }
+        .badge-purple { background: #2a1a3e; color: #bb86fc; }
+
+        .stats { margin-bottom: 3rem; }
+        .stats h2 { font-size: 1.2rem; color: #fff; margin-bottom: 1rem; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
+        .stat-box {
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .stat-box .number { font-size: 1.6rem; font-weight: 700; color: #7aa2f7; }
+        .stat-box .label { font-size: 0.78rem; color: #888; margin-top: 0.25rem; }
+
+        .legend { margin-bottom: 2rem; }
+        .legend h2 { font-size: 1.2rem; color: #fff; margin-bottom: 1rem; }
+        .legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+        }
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .line {
+            width: 24px;
+            height: 3px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        footer {
+            border-top: 1px solid #2a2a4a;
+            padding-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #555;
+        }
+        footer a { color: #7aa2f7; text-decoration: none; }
+
+        @media (max-width: 640px) {
+            .cards { grid-template-columns: 1fr; }
+            .legend-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tweet Target Entity &amp; Sentiment Detection</h1>
+        <p class="subtitle">
+            Relation graph for dev + test splits &mdash;
+            <a href="https://aclanthology.org/2024.emnlp-main.22/">Pujari, Wu &amp; Goldwasser (EMNLP 2024)</a>
+        </p>
+
+        <div class="cards">
+            <a href="graph_full.html" class="card">
+                <h2>Full Graph</h2>
+                <p>All 1,150 nodes and 3,691 edges. Tweets (green), entities (orange), authors (blue), events (purple stars), parties (orange diamonds). Zoom, pan, drag, hover for details.</p>
+                <span class="badge badge-green">Interactive</span>
+            </a>
+            <a href="graph_condensed.html" class="card">
+                <h2>Condensed Graph</h2>
+                <p>Tweet nodes removed. Shows direct author &rarr; entity targeting (colored by sentiment) and entity co-targeting links. Entity sizes scale with connectivity.</p>
+                <span class="badge badge-purple">Recommended</span>
+            </a>
+        </div>
+
+        <div class="stats">
+            <h2>Graph Statistics</h2>
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="number">1,150</div>
+                    <div class="label">Total Nodes</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">3,691</div>
+                    <div class="label">Total Edges</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">628</div>
+                    <div class="label">Tweets</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">318</div>
+                    <div class="label">Entities</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">199</div>
+                    <div class="label">Authors</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">3</div>
+                    <div class="label">Events</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <h2>Sentiment Distribution (972 TARGETS edges)</h2>
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="number" style="color: #4CAF50;">421</div>
+                    <div class="label">Positive</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" style="color: #E53935;">319</div>
+                    <div class="label">Negative</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" style="color: #FDD835;">232</div>
+                    <div class="label">Neutral</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <h2>Visual Legend</h2>
+            <div class="legend-grid">
+                <div class="legend-item"><div class="dot" style="background:#4CAF50;"></div> Tweet node</div>
+                <div class="legend-item"><div class="dot" style="background:#FF5722;"></div> Entity node</div>
+                <div class="legend-item"><div class="dot" style="background:#2196F3;"></div> Author node</div>
+                <div class="legend-item"><div class="dot" style="background:#9C27B0;"></div> Event node (star)</div>
+                <div class="legend-item"><div class="dot" style="background:#FF9800;"></div> Party node (diamond)</div>
+                <div class="legend-item"><div class="line" style="background:#E53935;"></div> TARGETS edge</div>
+                <div class="legend-item"><div class="line" style="background:#BDBDBD;"></div> MENTIONS edge</div>
+                <div class="legend-item"><div class="line" style="background:#1E88E5;"></div> AUTHORED edge</div>
+                <div class="legend-item"><div class="line" style="background:#8E24AA;"></div> ABOUT edge</div>
+                <div class="legend-item"><div class="line" style="background:#FB8C00;"></div> BELONGS_TO edge</div>
+                <div class="legend-item"><div class="line" style="background:#FDD835;"></div> CO_TARGETED edge</div>
+            </div>
+        </div>
+
+        <footer>
+            Built for the Social Context Grounding benchmark &mdash;
+            <a href="https://github.com/pujari-rajkumar/language-in-context">Paper repo</a>
+        </footer>
+    </div>
+</body>
+</html>
